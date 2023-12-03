@@ -1,0 +1,11 @@
+2023/12/03 17:53:15 404 GET /admin/
+2023/12/03 17:53:15 404 GET /favicon.ico
+2023/12/03 17:53:22 404 GET /swagger
+2023/12/03 17:53:33 404 GET /api/swagger/
+2023/12/03 17:54:08 404 GET /api/swagger/h
+2023/12/03 17:55:43 200 GET /api/swagger/index.html
+2023/12/03 17:55:43 200 GET /api/swagger/swagger-ui.css
+2023/12/03 17:55:43 200 GET /api/swagger/swagger-ui-bundle.js
+2023/12/03 17:55:43 200 GET /api/swagger/swagger-ui-standalone-preset.js
+2023/12/03 17:55:43 200 GET /api/swagger/doc.json
+2023/12/03 17:55:44 200 GET /api/swagger/favicon-32x32.png

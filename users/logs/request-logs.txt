@@ -1,0 +1,11 @@
+2023/12/03 17:53:15 GET /admin/ HTTP/1.1 198.643µs
+2023/12/03 17:53:15 GET /favicon.ico HTTP/1.1 40.661µs
+2023/12/03 17:53:22 GET /swagger HTTP/1.1 41.09µs
+2023/12/03 17:53:33 GET /api/swagger/ HTTP/1.1 73.437µs
+2023/12/03 17:54:08 GET /api/swagger/h HTTP/1.1 59.5µs
+2023/12/03 17:55:43 GET /api/swagger/index.html HTTP/1.1 303.022µs
+2023/12/03 17:55:43 GET /api/swagger/swagger-ui.css HTTP/1.1 260.841µs
+2023/12/03 17:55:43 GET /api/swagger/swagger-ui-bundle.js HTTP/1.1 666.46µs
+2023/12/03 17:55:43 GET /api/swagger/swagger-ui-standalone-preset.js HTTP/1.1 338.174µs
+2023/12/03 17:55:43 GET /api/swagger/doc.json HTTP/1.1 386.943µs
+2023/12/03 17:55:44 GET /api/swagger/favicon-32x32.png HTTP/1.1 335.38µs
