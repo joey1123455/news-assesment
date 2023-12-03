@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/joey1123455/news-aggregator-service/users/models"
@@ -11,8 +12,10 @@ import (
 )
 
 type UserService interface {
-	FindUserById(string) (*models.DBResponse, error)
-	FindUserByEmail(string) (*models.DBResponse, error)
+	FindUserById(id string) (*models.DBResponse, error)
+	FindUserByEmail(email string) (*models.DBResponse, error)
+	UpdateUserById(id string, field string, value string) (*models.DBResponse, error)
+	UpdateOne(field string, value interface{}) (*models.DBResponse, error)
 }
 
 type UserServiceImpl struct {
@@ -56,4 +59,33 @@ func (us *UserServiceImpl) FindUserByEmail(email string) (*models.DBResponse, er
 	}
 
 	return user, nil
+}
+
+func (uc *UserServiceImpl) UpdateUserById(id string, field string, value string) (*models.DBResponse, error) {
+	userId, _ := primitive.ObjectIDFromHex(id)
+	query := bson.D{{Key: "_id", Value: userId}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: field, Value: value}}}}
+	result, err := uc.collection.UpdateOne(uc.ctx, query, update)
+
+	fmt.Print(result.ModifiedCount)
+	if err != nil {
+		fmt.Print(err)
+		return &models.DBResponse{}, err
+	}
+
+	return &models.DBResponse{}, nil
+}
+
+func (uc *UserServiceImpl) UpdateOne(field string, value interface{}) (*models.DBResponse, error) {
+	query := bson.D{{Key: field, Value: value}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: field, Value: value}}}}
+	result, err := uc.collection.UpdateOne(uc.ctx, query, update)
+
+	fmt.Print(result.ModifiedCount)
+	if err != nil {
+		fmt.Print(err)
+		return &models.DBResponse{}, err
+	}
+
+	return &models.DBResponse{}, nil
 }
