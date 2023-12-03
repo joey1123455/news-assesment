@@ -11,10 +11,13 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/joey1123455/news-aggregator-service/users/config"
 	"github.com/joey1123455/news-aggregator-service/users/controllers"
+	docs "github.com/joey1123455/news-aggregator-service/users/docs"
 	"github.com/joey1123455/news-aggregator-service/users/middleware"
 	"github.com/joey1123455/news-aggregator-service/users/routes"
 	"github.com/joey1123455/news-aggregator-service/users/services"
 	"github.com/joey1123455/news-aggregator-service/users/utils"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -36,6 +39,24 @@ var (
 	AuthController      controllers.AuthController
 	AuthRouteController routes.AuthRouteController
 )
+
+//	@title			News Aggregator user service
+//	@version		1.0
+//	@description	This is a user management service for the news aggregator system
+//	@termsOfService	http://swagger.io/terms/
+
+//	@contact.name	Joseph Folayan
+//	@contact.email	folayanjoey@gmail.com
+
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @securityDefinitions.apiKey JWT
+// @in header, cookie
+// @name Authorization, access_token
+
+// @host localhost:8000
+// @BasePath /api
 
 func main() {
 	config, err := config.LoadConfig(".")
@@ -72,6 +93,7 @@ func main() {
 	server.Use(middleware.RequestLogger(reqLogFile))
 	server.Use(middleware.ResponseLogger(resLogFile))
 
+	docs.SwaggerInfo.BasePath = "/api"
 	router := server.Group("/api")
 	router.GET("/healthchecker", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": value})
@@ -79,6 +101,8 @@ func main() {
 
 	AuthRouteController.AuthRoute(router, userService)
 	UserRouteController.UserRoute(router, userService)
+	// add swagger
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	log.Fatal(server.Run(":" + config.Port))
 }
 

@@ -30,6 +30,17 @@ func NewAuthController(authService services.AuthService, userService services.Us
 	return AuthController{authService, userService, ctx, collection}
 }
 
+// @Summary Sign up user
+// @Description Sign up a new user with the provided information.
+// @Produce json
+// @Accept json
+// @Param user body models.SignUpInput true "User information for sign up"
+// @Success 201 {object} gin.H{"status": "success", "message": "We sent an email with a verification code to user@example.com"} "User signed up successfully"
+// @Failure 400 {object} gin.H{"status": "fail", "message": "Invalid request payload or parameters"} "Invalid request payload or parameters"
+// @Failure 400 {object} gin.H{"status": "fail", "message": "Passwords do not match"} "Passwords do not match"
+// @Failure 409 {object} gin.H{"status": "error", "message": "Email already exists"} "Email already exists"
+// @Failure 502 {object} gin.H{"status": "error", "message": "Error while signing up new user"} "Error while signing up new user"
+// @Router /sign-up [post]
 func (ac *AuthController) SignUpUser(ctx *gin.Context) {
 	var user *models.SignUpInput
 
@@ -87,6 +98,15 @@ func (ac *AuthController) SignUpUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "message": message})
 }
 
+// @Summary Sign in user
+// @Description Sign in a user using their email and password.
+// @Produce json
+// @Accept json
+// @Param credentials body models.SignInInput true "User credentials for sign in"
+// @Success 200 {object} gin.H{"status": "success", "access_token": "access_token"} "User signed in successfully"
+// @Failure 400 {object} gin.H{"status": "fail", "message": "Invalid email or password"} "Invalid email or password"
+// @Failure 401 {object} gin.H{"status": "fail", "message": "You are not verified, please verify your email to login"} "User not verified"
+// @Router /auth/sign-in [post]
 func (ac *AuthController) SignInUser(ctx *gin.Context) {
 	var credentials *models.SignInInput
 
@@ -140,6 +160,12 @@ func (ac *AuthController) SignInUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "access_token": access_token})
 }
 
+// @Summary Refresh access token
+// @Description Refresh the user's access token using the provided refresh token.
+// @Produce json
+// @Success 200 {object} gin.H{"status": "success", "access_token": "new_access_token"} "Access token refreshed successfully"
+// @Failure 403 {object} gin.H{"status": "fail", "message": "Could not refresh access token"} "Could not refresh access token"
+// @Router /auth/refresh-access-token [get]
 func (ac *AuthController) RefreshAccessToken(ctx *gin.Context) {
 	message := "could not refresh access token"
 
@@ -179,6 +205,11 @@ func (ac *AuthController) RefreshAccessToken(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "access_token": access_token})
 }
 
+// @Summary Logout a user
+// @Description Logout a user by clearing the access_token, refresh_token, and logged_in cookies.
+// @Produce json
+// @Success 200 {object} gin.H{"status": "success"} "Successfully logged out"
+// @Router /auth/logout [post]
 func (ac *AuthController) LogoutUser(ctx *gin.Context) {
 	ctx.SetCookie("access_token", "", -1, "/", "localhost", false, true)
 	ctx.SetCookie("refresh_token", "", -1, "/", "localhost", false, true)
@@ -187,6 +218,14 @@ func (ac *AuthController) LogoutUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"status": "success"})
 }
 
+// @Summary Verify email address
+// @Description Verify email address using the provided verification code.
+// @Produce json
+// @Param verificationCode path string true "Verification code for email verification"
+// @Success 200 {object} gin.H{"status": "success", "message": "Email verified successfully"} "Email verified successfully"
+// @Failure 403 {object} gin.H{"status": "success", "message": "Could not verify email address"} "Could not verify email address"
+// @Failure 403 {object} gin.H{"status": "success", "message": "Error while verifying email"} "Error while verifying email"
+// @Router /auth/verify-email/{verificationCode} [post]
 func (ac *AuthController) VerifyEmail(ctx *gin.Context) {
 
 	code := ctx.Params.ByName("verificationCode")
@@ -212,6 +251,18 @@ func (ac *AuthController) VerifyEmail(ctx *gin.Context) {
 
 }
 
+// @Summary Reset password
+// @Description Reset user password using the provided reset token and new password.
+// @Produce json
+// @Accept json
+// @Param resetToken path string true "Reset token for password reset"
+// @Param userCredential body models.ResetPasswordInput true "User credentials for password reset"
+// @Success 200 {object} gin.H{"status": "success", "message": "Password data updated successfully"} "Password data updated successfully"
+// @Failure 400 {object} gin.H{"status": "fail", "message": "Invalid request payload or parameters"} "Invalid request payload or parameters"
+// @Failure 400 {object} gin.H{"status": "fail", "message": "Passwords do not match"} "Passwords do not match"
+// @Failure 400 {object} gin.H{"status": "fail", "message": "Token is invalid or has expired"} "Token is invalid or has expired"
+// @Failure 403 {object} gin.H{"status": "fail", "message": "Error while resetting password"} "Error while resetting password"
+// @Router /auth/reset-password/{resetToken} [post]
 func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 	var userCredential *models.ForgotPasswordInput
 
@@ -285,6 +336,18 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": message})
 }
 
+// @Summary Reset password
+// @Description Reset user password using the provided reset token and new password.
+// @Produce json
+// @Accept json
+// @Param resetToken path string true "Reset token for password reset"
+// @Param userCredential body models.ResetPasswordInput true "User credentials for password reset"
+// @Success 200 {object} gin.H{"status": "success", "message": "Password data updated successfully"} "Password data updated successfully"
+// @Failure 400 {object} gin.H{"status": "fail", "message": "Invalid request payload or parameters"} "Invalid request payload or parameters"
+// @Failure 400 {object} gin.H{"status": "fail", "message": "Passwords do not match"} "Passwords do not match"
+// @Failure 400 {object} gin.H{"status": "fail", "message": "Token is invalid or has expired"} "Token is invalid or has expired"
+// @Failure 403 {object} gin.H{"status": "fail", "message": "Error while resetting password"} "Error while resetting password"
+// @Router /auth/reset-password/{resetToken} [post]
 func (ac *AuthController) ResetPassword(ctx *gin.Context) {
 	resetToken := ctx.Params.ByName("resetToken")
 	var userCredential *models.ResetPasswordInput

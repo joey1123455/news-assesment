@@ -16,6 +16,13 @@ func NewUserController(userService services.UserService) UserController {
 	return UserController{userService}
 }
 
+// @Summary Get current user details
+// @Description Get details of the currently authenticated user.
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} gin.H{"status": "success", "data": {"user": {}}} "Current user details retrieved successfully"
+// @Failure 401 {object} gin.H{"status": "fail", "message": "Unauthorized"} "Unauthorized access"
+// @Router /user/me [get]
 func (uc *UserController) GetMe(ctx *gin.Context) {
 	currentUser := ctx.MustGet("currentUser").(*models.DBResponse)
 
