@@ -43,6 +43,15 @@ type UserResponse struct {
 	UpdatedAt time.Time          `json:"updated_at" bson:"updated_at"`
 }
 
+type ForgotPasswordInput struct {
+	Email string `json:"email" binding:"required"`
+}
+
+type ResetPasswordInput struct {
+	Password        string `json:"password" binding:"required"`
+	PasswordConfirm string `json:"passwordConfirm" binding:"required"`
+}
+
 func FilteredResponse(user *DBResponse) UserResponse {
 	return UserResponse{
 		ID:        user.ID,

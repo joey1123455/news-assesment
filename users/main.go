@@ -11,8 +11,11 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/joey1123455/news-aggregator-service/users/config"
 	"github.com/joey1123455/news-aggregator-service/users/controllers"
+	"github.com/joey1123455/news-aggregator-service/users/middleware"
 	"github.com/joey1123455/news-aggregator-service/users/routes"
 	"github.com/joey1123455/news-aggregator-service/users/services"
+	"github.com/joey1123455/news-aggregator-service/users/utils"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -48,14 +51,26 @@ func main() {
 	if err == redis.Nil {
 		fmt.Println("key: test does not exist")
 	} else if err != nil {
+		utils.LogErrorToFile("open request log file", err.Error())
 		panic(err)
 	}
 
 	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = []string{"http://localhost:8000", "http://localhost:3000"}
+	corsConfig.AllowOrigins = []string{config.Origin}
 	corsConfig.AllowCredentials = true
 
+	reqLogFile, err := middleware.NewFileLogger("./logs/request-logs.txt")
+	if err != nil {
+		utils.LogErrorToFile("open request log file", err.Error())
+	}
+	resLogFile, err := middleware.NewFileLogger("./logs/response-logs.txt")
+	if err != nil {
+		utils.LogErrorToFile("open response log file", err.Error())
+	}
+
 	server.Use(cors.New(corsConfig))
+	server.Use(middleware.RequestLogger(reqLogFile))
+	server.Use(middleware.ResponseLogger(resLogFile))
 
 	router := server.Group("/api")
 	router.GET("/healthchecker", func(ctx *gin.Context) {
@@ -67,7 +82,6 @@ func main() {
 	log.Fatal(server.Run(":" + config.Port))
 }
 
-// set up the project
 func init() {
 	config, err := config.LoadConfig(".")
 	if err != nil {
@@ -81,10 +95,12 @@ func init() {
 	mongoclient, err := mongo.Connect(ctx, mongoconn)
 
 	if err != nil {
+		utils.LogErrorToFile("connect to mongo db", err.Error())
 		panic(err)
 	}
 
 	if err := mongoclient.Ping(ctx, readpref.Primary()); err != nil {
+		utils.LogErrorToFile("pinging mongo db client", err.Error())
 		panic(err)
 	}
 
@@ -96,11 +112,13 @@ func init() {
 	})
 
 	if _, err := redisclient.Ping(ctx).Result(); err != nil {
+		utils.LogErrorToFile("pinging redis client", err.Error())
 		panic(err)
 	}
 
 	err = redisclient.Set(ctx, "test", "Welcome to Golang with Redis and MongoDB", 0).Err()
 	if err != nil {
+		utils.LogErrorToFile("setting redis db", err.Error())
 		panic(err)
 	}
 
@@ -110,7 +128,7 @@ func init() {
 	authCollection = mongoclient.Database("golang_mongodb").Collection("users")
 	userService = services.NewUserServiceImpl(authCollection, ctx)
 	authService = services.NewAuthService(authCollection, ctx)
-	AuthController = controllers.NewAuthController(authService, userService)
+	AuthController = controllers.NewAuthController(authService, userService, ctx, authCollection)
 	AuthRouteController = routes.NewAuthRouteController(AuthController)
 
 	UserController = controllers.NewUserController(userService)
