@@ -9,3 +9,4 @@
 2023/12/03 17:55:43 200 GET /api/swagger/swagger-ui-standalone-preset.js
 2023/12/03 17:55:43 200 GET /api/swagger/doc.json
 2023/12/03 17:55:44 200 GET /api/swagger/favicon-32x32.png
+2023/12/03 18:58:09 200 GET /api/healthchecker

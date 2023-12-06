@@ -9,3 +9,4 @@
 2023/12/03 17:55:43 GET /api/swagger/swagger-ui-standalone-preset.js HTTP/1.1 338.174µs
 2023/12/03 17:55:43 GET /api/swagger/doc.json HTTP/1.1 386.943µs
 2023/12/03 17:55:44 GET /api/swagger/favicon-32x32.png HTTP/1.1 335.38µs
+2023/12/03 18:58:09 GET /api/healthchecker HTTP/1.1 265.75µs
