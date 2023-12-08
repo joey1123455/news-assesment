@@ -21,15 +21,20 @@ import (
 )
 
 var (
-	server      *gin.Engine
-	ctx         context.Context
-	mongoclient *mongo.Client
-	redisclient *redis.Client
-	// articleCollection *mongo.Collection
+	server            *gin.Engine
+	ctx               context.Context
+	mongoclient       *mongo.Client
+	redisclient       *redis.Client
+	articleCollection *mongo.Collection
 
-	scraperService          services.ScrapeArticleService
-	scraperController       controllers.ArticleScrapperController
+	scraperService services.ScrapeArticleService
+	saverService   services.ArticleSaverService
+
+	scraperController controllers.ArticleScrapperController
+	saverController   controllers.ArticleSaverController
+
 	scraperRoutesController routes.ScrapeRouteController
+	saverRouteController    routes.SaveRouteController
 )
 
 //	@title			News Aggregator user service
@@ -75,6 +80,7 @@ func main() {
 		ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": value})
 	})
 	scraperRoutesController.ScrapeRoute(router, scraperService)
+	saverRouteController.SaveRoute(router, saverService)
 
 	log.Fatal(server.Run(":" + config.Port))
 }
@@ -122,11 +128,19 @@ func init() {
 	fmt.Println("Redis client connected successfully...")
 
 	// Collections
-	// articleCollection = mongoclient.Database("golang_mongodb").Collection("articles")
+	articleCollection = mongoclient.Database("golang_mongodb").Collection("articles")
 
+	// Services
 	scraperService = services.NewScrapper(ctx, redisclient, Config.ApiKey)
+	saverService = services.NewArticleSaver(ctx, redisclient, articleCollection)
+
+	// Controllers
 	scraperController = controllers.NewArticleScrapperController(scraperService)
+	saverController = controllers.NewArticleSaverController(saverService)
+
+	// Routes
 	scraperRoutesController = routes.NewScrapeRouteController(scraperController)
+	saverRouteController = routes.NewSaverRouteController(saverController)
 
 	server = gin.Default()
 }

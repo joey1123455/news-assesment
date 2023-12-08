@@ -130,7 +130,7 @@ func (as ScrapeArticleServiceImp) cacheArticle(article *models.Article, key stri
 		return fmt.Errorf("error marshaling article: %w", err)
 	}
 
-	err = as.rClient.SetNX(key, articleJSON, time.Hour).Err()
+	err = as.rClient.SetNX(key, articleJSON, 2*time.Hour).Err()
 	if err != nil {
 		return fmt.Errorf("error storing article in Redis: %w", err)
 	}
