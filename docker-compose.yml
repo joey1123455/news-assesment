@@ -1,5 +1,29 @@
 version: '3'
 services:
+  users:
+    build: ./users
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongodb
+      - redis
+
+  service2:
+    build: ./news-ags
+    ports:
+      - "8001:8001"
+    depends_on:
+      - mongodb
+      - redis
+
+  content-management-system:
+    build: ./content-management-system
+    ports:
+      - "8002:8002"
+    depends_on:
+      - mongodb
+      - redis 
+
   mongodb:
     image: mongo
     container_name: mongodb
