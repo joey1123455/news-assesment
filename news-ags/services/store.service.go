@@ -141,7 +141,7 @@ func (aSS ArticleSaverServiceImp) SaveArticles() error {
 		Options: options.Index().SetUnique(false),
 	}
 
-	// Index model for keywords
+	// Index model for content
 	contentIndex := mongo.IndexModel{
 		Keys: bson.D{{Key: "content", Value: "text"}},
 	}

@@ -10,10 +10,16 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
-	"github.com/joey1123455/news-aggregator-service/news-ags/config"
-	"github.com/joey1123455/news-aggregator-service/news-ags/controllers"
-	"github.com/joey1123455/news-aggregator-service/news-ags/routes"
-	"github.com/joey1123455/news-aggregator-service/news-ags/services"
+	"github.com/joey1123455/news-aggregator-service/content-management-system/config"
+	"github.com/joey1123455/news-aggregator-service/content-management-system/controllers"
+	"github.com/joey1123455/news-aggregator-service/content-management-system/routes"
+	"github.com/joey1123455/news-aggregator-service/content-management-system/services"
+	"github.com/joey1123455/news-aggregator-service/content-management-system/utils"
+
+	middleware "github.com/joey1123455/news-aggregator-service/content-management-system/middlewares"
+
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/swag/example/basic/docs"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -25,21 +31,22 @@ var (
 	ctx               context.Context
 	mongoclient       *mongo.Client
 	redisclient       *redis.Client
-	articleCollection *mongo.Collection
+	profileCollection *mongo.Collection
+	newsCollection    *mongo.Collection
 
-	scraperService services.ScrapeArticleService
-	saverService   services.ArticleSaverService
+	profileService services.ProfileServices
+	newsService    services.ArticleServices
 
-	scraperController controllers.ArticleScrapperController
-	saverController   controllers.ArticleSaverController
+	newsController    controllers.NewsController
+	profileController controllers.ProfileController
 
-	scraperRoutesController routes.ScrapeRouteController
-	saverRouteController    routes.SaveRouteController
+	newsRouter    routes.NewsRouteController
+	profileRouter routes.ProfileRouteController
 )
 
-//	@title			News Aggregator service
+//	@title			News aggregator content management service
 //	@version		1.0
-//	@description	This service scrapes for news articles and stores in a mongo db the news aggregator system
+//	@description	This is a content management service for the news aggregator system
 //	@termsOfService	http://swagger.io/terms/
 
 //	@contact.name	Joseph Folayan
@@ -48,7 +55,11 @@ var (
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:8001
+// @securityDefinitions.apiKey JWT
+// @in header, cookie
+// @name Authorization, access_token
+
+// @host localhost:8002
 // @BasePath /api
 
 func main() {
@@ -72,16 +83,29 @@ func main() {
 	corsConfig.AllowOrigins = []string{config.Origin}
 	corsConfig.AllowCredentials = true
 
+	reqLogFile, err := middleware.NewFileLogger("./logs/request-logs.txt")
+	if err != nil {
+		utils.LogErrorToFile("open request log file", err.Error())
+	}
+	resLogFile, err := middleware.NewFileLogger("./logs/response-logs.txt")
+	if err != nil {
+		utils.LogErrorToFile("open response log file", err.Error())
+	}
+
 	server.Use(cors.New(corsConfig))
+	server.Use(middleware.RequestLogger(reqLogFile))
+	server.Use(middleware.ResponseLogger(resLogFile))
 
 	docs.SwaggerInfo.BasePath = "/api"
 	router := server.Group("/api")
 	router.GET("/healthchecker", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": value})
 	})
-	scraperRoutesController.ScrapeRoute(router, scraperService)
-	saverRouteController.SaveRoute(router, saverService)
 
+	newsRouter.NewsRoute(router, newsService)
+	profileRouter.ProfileRoute(router, profileService)
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	log.Fatal(server.Run(":" + config.Port))
 }
 
@@ -127,20 +151,17 @@ func init() {
 
 	fmt.Println("Redis client connected successfully...")
 
-	// Collections
-	articleCollection = mongoclient.Database("golang_mongodb").Collection("articles")
+	newsCollection = mongoclient.Database("golang_mongodb").Collection("articles")
+	profileCollection = mongoclient.Database("golang_mongodb").Collection("profiles")
 
-	// Services
-	scraperService = services.NewScrapper(ctx, redisclient, Config.ApiKey)
-	saverService = services.NewArticleSaver(ctx, redisclient, articleCollection)
+	newsService = services.NewArticleService(ctx, newsCollection)
+	profileService = services.NewProfileService(ctx, profileCollection)
 
-	// Controllers
-	scraperController = controllers.NewArticleScrapperController(scraperService)
-	saverController = controllers.NewArticleSaverController(saverService)
+	newsController = controllers.NewNewsController(newsService)
+	profileController = controllers.NewProfileController(profileService)
 
-	// Routes
-	scraperRoutesController = routes.NewScrapeRouteController(scraperController)
-	saverRouteController = routes.NewSaverRouteController(saverController)
+	newsRouter = routes.NewNewsControllerRoute(newsController)
+	profileRouter = routes.NewprofileControllerRoute(profileController)
 
 	server = gin.Default()
 }

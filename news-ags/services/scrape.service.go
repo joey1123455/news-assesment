@@ -118,7 +118,7 @@ func (as ScrapeArticleServiceImp) getNews(apiKey, category, nextPage string) err
 	}
 
 	for _, article := range result.Articles {
-		as.cacheArticle(&article, "articleKey:"+article.Id)
+		as.cacheArticle(&article, "articleKey:"+article.Id.Hex())
 	}
 
 	return nil

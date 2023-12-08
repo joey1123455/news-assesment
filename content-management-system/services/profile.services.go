@@ -102,3 +102,18 @@ func (p *ProfileServicesImp) DeleteUser(id string) error {
 
 	return nil
 }
+
+func (ps *ProfileServicesImp) DeserializeUser(id string) (*models.UserProfile, error) {
+	oid, _ := primitive.ObjectIDFromHex(id)
+
+	var user *models.UserProfile
+	query := bson.M{"_id": oid}
+	err := ps.collection.FindOne(ps.ctx, query).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return &models.UserProfile{}, err
+		}
+		return nil, err
+	}
+	return user, nil
+}

@@ -13,7 +13,7 @@ type ProfileController struct {
 	service services.ProfileServices
 }
 
-func NewPostController(postService services.ProfileServices) ProfileController {
+func NewProfileController(postService services.ProfileServices) ProfileController {
 	return ProfileController{postService}
 }
 
@@ -22,8 +22,8 @@ func NewPostController(postService services.ProfileServices) ProfileController {
 // @Security ApiKeyAuth
 // @Produce json
 // @Accept json
-// @Param user body models.CreateUser true "User information for profile creation"
-// @Success 201 {object} CreateProfile
+// @Param user body Profile true "User information for profile creation"
+// @Success 201 {object} Profile
 // @Failure 409 {object} string "profile already exists"
 // @Failure 502 {object} string "error message"
 // @Router /profile/create [post]
@@ -52,17 +52,43 @@ func (pc *ProfileController) CreateProfile(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{"status": "success", "profile": profile})
 }
 
+// @Summary Retrieve User Profile
+// @Description Retrieves a users profile.
+// @Security ApiKeyAuth
+// @Produce json
+// @Accept json
+// @Success 200 {object} Profile
+// @Failure 404 {object} string "User not found"
+// @Failure 502 {object} string "Error while signing up new user"
+// @Router /profile/me [get]
+func (pc *ProfileController) FindProfile(ctx *gin.Context) {
+	id := ctx.MustGet("currentUserId").(string)
+
+	profile, err := pc.service.FindUser(id)
+
+	if err != nil {
+		if strings.Contains(err.Error(), "Id exists") {
+			ctx.JSON(http.StatusNotFound, gin.H{"status": "fail", "message": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusBadGateway, gin.H{"status": "fail", "message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "data": models.FilteredResponse(*profile)})
+}
+
 // @Summary Update User Profile
 // @Description Update a users profile.
 // @Security ApiKeyAuth
 // @Produce json
 // @Accept json
 // @Param user body models.UpdateUser true "User information for profile update"
-// @Success 201 {object} UpdateProfile
+// @Success 200 {object} Profile
 // @Failure 404 {object} string "User not found"
 // @Failure 502 {object} string "Error while signing up new user"
-// @Router /profile/update [post]
-func (pc *ProfileController) UpdateUser(ctx *gin.Context) {
+// @Router /profile/update [patch]
+func (pc *ProfileController) UpdateProfile(ctx *gin.Context) {
 	id := ctx.MustGet("currentUserId").(string)
 
 	var data *models.UpdateUser
@@ -93,8 +119,8 @@ func (pc *ProfileController) UpdateUser(ctx *gin.Context) {
 // @Success 204
 // @Failure 404 {object} string "User not found"
 // @Failure 502 {object} string "Error while signing up new user"
-// @Router /profile/delete [post]
-func (pc *ProfileController) DeleteUser(ctx *gin.Context) {
+// @Router /profile/delete [delete]
+func (pc *ProfileController) DeleteProfile(ctx *gin.Context) {
 	id := ctx.MustGet("currentUserId").(string)
 
 	err := pc.service.DeleteUser(id)

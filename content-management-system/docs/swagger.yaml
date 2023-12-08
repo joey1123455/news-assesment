@@ -1,0 +1,279 @@
+basePath: /api
+definitions:
+  controllers.EgFilteredRes:
+    properties:
+      prefrence:
+        $ref: '#/definitions/models.Prefrence'
+      user_name:
+        type: string
+    type: object
+  controllers.Profile:
+    properties:
+      profile:
+        $ref: '#/definitions/controllers.EgFilteredRes'
+      status:
+        type: string
+    type: object
+  controllers.SearchResponse:
+    properties:
+      articles:
+        items:
+          $ref: '#/definitions/models.MongoArticle'
+        type: array
+      status:
+        type: string
+    type: object
+  models.Article:
+    properties:
+      article_id:
+        type: string
+      category:
+        items:
+          type: string
+        type: array
+      content:
+        type: string
+      country:
+        items:
+          type: string
+        type: array
+      creator:
+        items:
+          type: string
+        type: array
+      description:
+        type: string
+      image_url:
+        type: string
+      keywords:
+        items:
+          type: string
+        type: array
+      link:
+        type: string
+      pubDate:
+        type: string
+      source_id:
+        type: string
+      source_priority:
+        type: integer
+      title:
+        type: string
+    required:
+    - article_id
+    type: object
+  models.MongoArticle:
+    properties:
+      article:
+        $ref: '#/definitions/models.Article'
+      created_at:
+        type: string
+      id:
+        type: string
+    required:
+    - article
+    - created_at
+    - id
+    type: object
+  models.Prefrence:
+    properties:
+      categories:
+        items:
+          type: string
+        type: array
+      liked:
+        items:
+          type: string
+        type: array
+    type: object
+  models.UpdateUser:
+    properties:
+      prefrence:
+        $ref: '#/definitions/models.Prefrence'
+      updated_at:
+        type: string
+      user_name:
+        type: string
+    type: object
+host: localhost:8002
+info:
+  contact:
+    email: folayanjoey@gmail.com
+    name: Joseph Folayan
+  description: This is a content management service for the news aggregator system
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: News aggregator content management service
+  version: "1.0"
+paths:
+  /news/feed:
+    get:
+      description: Returns a news feed according to users prefrences.
+      parameters:
+      - description: amount of page results to return
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: limit per page
+        in: query
+        name: limit
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controllers.SearchResponse'
+        "404":
+          description: querry not passed
+          schema:
+            type: string
+        "502":
+          description: error message
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Feed
+  /news/search:
+    get:
+      description: Searches database for articles containing the required keywords.
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controllers.SearchResponse'
+        "404":
+          description: querry not passed
+          schema:
+            type: string
+        "502":
+          description: error message
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Search
+  /profile/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a users profile.
+      parameters:
+      - description: User information for profile creation
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.Profile'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controllers.Profile'
+        "409":
+          description: profile already exists
+          schema:
+            type: string
+        "502":
+          description: error message
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Create User Profile
+  /profile/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a users profile.
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "502":
+          description: Error while signing up new user
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete User Profile
+  /profile/me:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a users profile.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.Profile'
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "502":
+          description: Error while signing up new user
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve User Profile
+  /profile/update:
+    patch:
+      consumes:
+      - application/json
+      description: Update a users profile.
+      parameters:
+      - description: User information for profile update
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.Profile'
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "502":
+          description: Error while signing up new user
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Update User Profile
+securityDefinitions:
+  JWT:
+    in: header, cookie
+    name: Authorization, access_token
+    type: apiKey
+swagger: "2.0"

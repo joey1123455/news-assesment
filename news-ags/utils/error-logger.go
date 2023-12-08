@@ -7,7 +7,6 @@ import (
 	"time"
 )
 
-// LogErrorToFile writes an error message to a file
 func LogErrorToFile(operation, errorMessage string) error {
 	currentDir, err := os.Getwd()
 	if err != nil {
@@ -20,7 +19,6 @@ func LogErrorToFile(operation, errorMessage string) error {
 		return fmt.Errorf("error opening or creating log file: %v", err)
 	}
 	defer file.Close()
-
 	logger := log.New(file, "", log.LstdFlags)
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
 	logger.Printf("[%s] [ERROR] [%s] %s\n", timestamp, operation, errorMessage)
