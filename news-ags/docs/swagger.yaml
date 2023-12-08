@@ -1,0 +1,31 @@
+basePath: /api
+host: localhost:8001
+info:
+  contact:
+    email: folayanjoey@gmail.com
+    name: Joseph Folayan
+  description: This service scrapes for news articles and stores in a mongo db the
+    news aggregator system
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: News Aggregator service
+  version: "1.0"
+paths:
+  /scrape/news:
+    get:
+      description: Makes a get request to newsapi.io and cahes news objects in database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: News scrapped and added to cache
+          schema:
+            type: string
+        "500":
+          description: error message
+          schema:
+            type: string
+      summary: Scrape News
+swagger: "2.0"

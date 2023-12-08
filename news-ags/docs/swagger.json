@@ -1,0 +1,44 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This service scrapes for news articles and stores in a mongo db the news aggregator system",
+        "title": "News Aggregator service",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "Joseph Folayan",
+            "email": "folayanjoey@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8001",
+    "basePath": "/api",
+    "paths": {
+        "/scrape/news": {
+            "get": {
+                "description": "Makes a get request to newsapi.io and cahes news objects in database",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Scrape News",
+                "responses": {
+                    "200": {
+                        "description": "News scrapped and added to cache",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
