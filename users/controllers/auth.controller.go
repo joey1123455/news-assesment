@@ -189,8 +189,9 @@ func (ac *AuthController) SignInUser(ctx *gin.Context) {
 	ctx.SetCookie("logged_in", "true", config.AccessTokenMaxAge*60, "/", "localhost", false, false)
 
 	res := SignInOkRes{
-		Status:      "success",
-		AccessToken: access_token,
+		Status:       "success",
+		AccessToken:  access_token,
+		RefreshToken: refresh_token,
 	}
 	ctx.JSON(http.StatusOK, res)
 }
@@ -294,12 +295,12 @@ func (ac *AuthController) VerifyEmail(ctx *gin.Context) {
 	result, err := ac.collection.UpdateOne(ac.ctx, query, update)
 	if err != nil {
 		utils.LogErrorToFile("while verifying email", err.Error())
-		ctx.JSON(http.StatusForbidden, gin.H{"status": "success", "message": err.Error()})
+		ctx.JSON(http.StatusForbidden, gin.H{"status": "fail", "message": err.Error()})
 		return
 	}
 
 	if result.MatchedCount == 0 {
-		ctx.JSON(http.StatusForbidden, gin.H{"status": "success", "message": "Could not verify email address"})
+		ctx.JSON(http.StatusForbidden, gin.H{"status": "fail", "message": "Could not verify email address"})
 		return
 	}
 
@@ -309,7 +310,7 @@ func (ac *AuthController) VerifyEmail(ctx *gin.Context) {
 
 }
 
-// @Summary Reset password
+// @Summary Forgot password
 // @Description Reset user password using the provided reset token and new password.
 // @Produce json
 // @Accept json

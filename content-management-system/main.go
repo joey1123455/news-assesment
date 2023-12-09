@@ -12,6 +12,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/joey1123455/news-aggregator-service/content-management-system/config"
 	"github.com/joey1123455/news-aggregator-service/content-management-system/controllers"
+	docs "github.com/joey1123455/news-aggregator-service/content-management-system/docs"
 	"github.com/joey1123455/news-aggregator-service/content-management-system/routes"
 	"github.com/joey1123455/news-aggregator-service/content-management-system/services"
 	"github.com/joey1123455/news-aggregator-service/content-management-system/utils"
@@ -20,7 +21,6 @@ import (
 
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/swag/example/basic/docs"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
