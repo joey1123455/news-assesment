@@ -12,9 +12,13 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/joey1123455/news-aggregator-service/news-ags/config"
 	"github.com/joey1123455/news-aggregator-service/news-ags/controllers"
+	docs "github.com/joey1123455/news-aggregator-service/news-ags/docs"
 	"github.com/joey1123455/news-aggregator-service/news-ags/routes"
 	"github.com/joey1123455/news-aggregator-service/news-ags/services"
-	"github.com/swaggo/swag/example/basic/docs"
+
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -81,6 +85,7 @@ func main() {
 	})
 	scraperRoutesController.ScrapeRoute(router, scraperService)
 	saverRouteController.SaveRoute(router, saverService)
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	log.Fatal(server.Run(":" + config.Port))
 }
