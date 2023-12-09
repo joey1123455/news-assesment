@@ -23,6 +23,29 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/save/news": {
+            "get": {
+                "description": "Saves news articles stored in a redis cache into a mongo collection",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Save News",
+                "responses": {
+                    "200": {
+                        "description": "News scrapped and added to cache",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/scrape/news": {
             "get": {
                 "description": "Makes a get request to newsapi.io and cahes news objects in database",

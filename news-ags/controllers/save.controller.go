@@ -20,7 +20,7 @@ func NewArticleSaverController(aSS services.ArticleSaverService) ArticleSaverCon
 // @Produce json
 // @Success 200 {object} string "News scrapped and added to cache"
 // @Failure 500 {object} string "error message"
-// @Router /scrape/news [get]
+// @Router /save/news [get]
 func (aSC ArticleSaverController) SaveArticles(ctx *gin.Context) {
 	err := aSC.saverService.SaveArticles()
 	if err != nil {
