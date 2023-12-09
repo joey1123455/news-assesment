@@ -1,5 +1,5 @@
 basePath: /api
-host: localhost:8001
+host: http://51.21.106.236:8001
 info:
   contact:
     email: folayanjoey@gmail.com

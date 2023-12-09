@@ -14,7 +14,7 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:8000",
+    "host": "http://51.21.106.236:8000",
     "basePath": "/api",
     "paths": {
         "/auth/logout": {
@@ -284,6 +284,9 @@
             "type": "object",
             "properties": {
                 "access_token": {
+                    "type": "string"
+                },
+                "refresh_token": {
                     "type": "string"
                 },
                 "status": {

@@ -292,6 +292,9 @@ const docTemplate = `{
                 "access_token": {
                     "type": "string"
                 },
+                "refresh_token": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "string"
                 }
@@ -399,7 +402,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8000",
+	Host:             "http://51.21.106.236:8000",
 	BasePath:         "/api",
 	Schemes:          []string{},
 	Title:            "News Aggregator user service",

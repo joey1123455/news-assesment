@@ -11,6 +11,8 @@ definitions:
     properties:
       access_token:
         type: string
+      refresh_token:
+        type: string
       status:
         type: string
     type: object
@@ -74,7 +76,7 @@ definitions:
       updated_at:
         type: string
     type: object
-host: localhost:8000
+host: http://51.21.106.236:8000
 info:
   contact:
     email: folayanjoey@gmail.com

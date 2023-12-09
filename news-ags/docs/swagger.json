@@ -14,7 +14,7 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:8001",
+    "host": "http://51.21.106.236:8001",
     "basePath": "/api",
     "paths": {
         "/save/news": {
