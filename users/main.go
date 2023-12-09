@@ -55,7 +55,7 @@ var (
 // @in header, cookie
 // @name Authorization, access_token
 
-// @host localhost:8000
+// @host http://51.21.106.236:8000
 // @BasePath /api
 
 func main() {
