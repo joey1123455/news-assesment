@@ -1,5 +1,31 @@
 version: '3'
 services:
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    env_file:
+      - ./docker.env
+    ports:
+      - "6000:27017"
+    volumes:
+      - mongodb:/data/db
+    networks:
+      - mynet
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    volumes:
+      - redisDB:/data
+    networks:
+      - mynet
+    ports:
+      - '6300:6379'
+    # expose:
+    #   - 6379
+
   users:
     build: ./users
     ports:
@@ -7,14 +33,20 @@ services:
     depends_on:
       - mongodb
       - redis
+    networks:
+      - mynet
+    command: ["./wait-for-it.sh", "mongodb:27017", "--", "./wait-for-it.sh", "redis:6379", "--", "./users"]
 
-  service2:
+  news-ags:
     build: ./news-ags
     ports:
       - "8001:8001"
     depends_on:
       - mongodb
       - redis
+    networks:
+      - mynet
+    command: ["./wait-for-it.sh", "mongodb:27017", "--", "./wait-for-it.sh", "redis:6379", "--", "./news-ags"]
 
   content-management-system:
     build: ./content-management-system
@@ -23,27 +55,14 @@ services:
     depends_on:
       - mongodb
       - redis 
+    networks:
+      - mynet
+    command: ["./wait-for-it.sh", "mongodb:27017", "--", "./wait-for-it.sh", "redis:6379", "--", "./content-management-system"]  
 
-  mongodb:
-    image: mongo
-    container_name: mongodb
-    restart: always
-    env_file:
-      - ./docker.env
-
-    ports:
-      - '6000:27017'
-    volumes:
-      - mongodb:/data/db
-
-  redis:
-    image: redis:alpine
-    container_name: redis
-    ports:
-      - '6379:6379'
-    volumes:
-      - redisDB:/data
 volumes:
   mongodb:
   redisDB:
 
+networks:
+  mynet:
+    driver: bridge
