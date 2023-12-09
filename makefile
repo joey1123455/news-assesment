@@ -29,4 +29,3 @@ server:
 .PHONY: down
 down:
 	docker-compose down
-
