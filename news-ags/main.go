@@ -52,7 +52,7 @@ var (
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host http://51.21.106.236:8001
+// @host 51.21.106.236:8001
 // @BasePath /api
 
 func main() {

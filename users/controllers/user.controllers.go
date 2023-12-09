@@ -22,7 +22,7 @@ func NewUserController(userService services.UserService) UserController {
 // @Security ApiKeyAuth
 // @Success 200 {object} models.UserResponse "Current user details retrieved successfully"
 // @Failure 401 {object} string "Unauthorized access"
-// @Router /user/me [get]
+// @Router /users/me [get]
 func (uc *UserController) GetMe(ctx *gin.Context) {
 	currentUser := ctx.MustGet("currentUser").(*models.DBResponse)
 

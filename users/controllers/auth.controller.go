@@ -40,7 +40,7 @@ func NewAuthController(authService services.AuthService, userService services.Us
 // @Failure 400 {object} string "Passwords do not match"
 // @Failure 409 {object} string "Email already exists"
 // @Failure 502 {object} string "Error while signing up new user"
-// @Router /auth/sign-up [post]
+// @Router /auth/register [post]
 func (ac *AuthController) SignUpUser(ctx *gin.Context) {
 	var user *models.SignUpInput
 
@@ -109,7 +109,7 @@ func (ac *AuthController) SignUpUser(ctx *gin.Context) {
 // @Failure 400 {object} ErrResponse "fail"
 // @Failure 401 {object} ErrResponse "fail"
 // @Failure 500 {object} ErrResponse "fail"
-// @Router /auth/signin [post]
+// @Router /auth/login [post]
 func (ac *AuthController) SignInUser(ctx *gin.Context) {
 	var credentials *models.SignInInput
 
@@ -201,10 +201,10 @@ func (ac *AuthController) SignInUser(ctx *gin.Context) {
 // @Description Refresh the access token using the provided refresh token
 // @ID refreshAccessToken
 // @Produce json
+// @Cookie refresh_token string true "Refresh token"
 // @Success 200 {object} SignInOkRes "success"
 // @Failure 403 {object} ErrResponse "fail"
 // @Router /auth/refresh [get]
-// @Cookie refresh_token string true "Refresh token"
 func (ac *AuthController) RefreshAccessToken(ctx *gin.Context) {
 	message := "could not refresh access token"
 
@@ -268,7 +268,7 @@ func (ac *AuthController) RefreshAccessToken(ctx *gin.Context) {
 // @Description Logout a user by clearing the access_token, refresh_token, and logged_in cookies.
 // @Produce json
 // @Success 200 {object} string "Successfully logged out"
-// @Router /auth/logout [post]
+// @Router /auth/logout [get]
 func (ac *AuthController) LogoutUser(ctx *gin.Context) {
 	ctx.SetCookie("access_token", "", -1, "/", "localhost", false, true)
 	ctx.SetCookie("refresh_token", "", -1, "/", "localhost", false, true)
@@ -284,7 +284,7 @@ func (ac *AuthController) LogoutUser(ctx *gin.Context) {
 // @Success 200 {object} string "Email verified successfully"
 // @Failure 403 {object} string "Could not verify email address"
 // @Failure 403 {object} string "Error while verifying email"
-// @Router /auth/verify-email/{verificationCode} [post]
+// @Router /auth/verifyemail/{verificationCode} [get]
 func (ac *AuthController) VerifyEmail(ctx *gin.Context) {
 
 	code := ctx.Params.ByName("verificationCode")
@@ -321,7 +321,7 @@ func (ac *AuthController) VerifyEmail(ctx *gin.Context) {
 // @Failure 400 {object} string "Passwords do not match"
 // @Failure 400 {object} string "Token is invalid or has expired"
 // @Failure 403 {object} string "Error while resetting password"
-// @Router /auth/reset-password/{resetToken} [post]
+// @Router /auth/forgotpassword [post]
 func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 	var userCredential *models.ForgotPasswordInput
 
@@ -406,7 +406,7 @@ func (ac *AuthController) ForgotPassword(ctx *gin.Context) {
 // @Failure 400 {object} string "Passwords do not match"
 // @Failure 400 {object} string "Token is invalid or has expired"
 // @Failure 403 {object} string "Error while resetting password"
-// @Router /auth/reset-password/{resetToken} [post]
+// @Router /auth/resetpassword/{resetToken} [patch]
 func (ac *AuthController) ResetPassword(ctx *gin.Context) {
 	resetToken := ctx.Params.ByName("resetToken")
 	var userCredential *models.ResetPasswordInput

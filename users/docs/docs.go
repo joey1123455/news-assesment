@@ -23,48 +23,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth/logout": {
-            "post": {
-                "description": "Logout a user by clearing the access_token, refresh_token, and logged_in cookies.",
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Logout a user",
-                "responses": {
-                    "200": {
-                        "description": "Successfully logged out",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/refresh": {
-            "get": {
-                "description": "Refresh the access token using the provided refresh token",
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Refresh access token",
-                "operationId": "refreshAccessToken",
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.SignInOkRes"
-                        }
-                    },
-                    "403": {
-                        "description": "fail",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.ErrResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/reset-password/{resetToken}": {
+        "/auth/forgotpassword": {
             "post": {
                 "description": "Reset user password using the provided reset token and new password.",
                 "consumes": [
@@ -73,7 +32,7 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Reset password",
+                "summary": "Forgot password",
                 "parameters": [
                     {
                         "type": "string",
@@ -114,56 +73,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/sign-up": {
-            "post": {
-                "description": "Sign up a new user with the provided information.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Sign up user",
-                "parameters": [
-                    {
-                        "description": "User information for sign up",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.SignUpInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "We sent an email with a verification code to email@example.com",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Passwords do not match",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "409": {
-                        "description": "Email already exists",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "502": {
-                        "description": "Error while signing up new user",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/signin": {
+        "/auth/login": {
             "post": {
                 "description": "Sign in a user with the provided credentials",
                 "consumes": [
@@ -213,8 +123,148 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/verify-email/{verificationCode}": {
+        "/auth/logout": {
+            "get": {
+                "description": "Logout a user by clearing the access_token, refresh_token, and logged_in cookies.",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Logout a user",
+                "responses": {
+                    "200": {
+                        "description": "Successfully logged out",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "get": {
+                "description": "Refresh the access token using the provided refresh token",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Refresh access token",
+                "operationId": "refreshAccessToken",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.SignInOkRes"
+                        }
+                    },
+                    "403": {
+                        "description": "fail",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
             "post": {
+                "description": "Sign up a new user with the provided information.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Sign up user",
+                "parameters": [
+                    {
+                        "description": "User information for sign up",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SignUpInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "We sent an email with a verification code to email@example.com",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Passwords do not match",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "409": {
+                        "description": "Email already exists",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "502": {
+                        "description": "Error while signing up new user",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/resetpassword/{resetToken}": {
+            "patch": {
+                "description": "Reset user password using the provided reset token and new password.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Reset password",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Reset token for password reset",
+                        "name": "resetToken",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User credentials for password reset",
+                        "name": "userCredential",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ResetPasswordInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Password data updated successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Token is invalid or has expired",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Error while resetting password",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/verifyemail/{verificationCode}": {
+            "get": {
                 "description": "Verify email address using the provided verification code.",
                 "produces": [
                     "application/json"
@@ -245,7 +295,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/me": {
+        "/users/me": {
             "get": {
                 "security": [
                     {
@@ -402,7 +452,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "http://51.21.106.236:8000",
+	Host:             "51.21.106.236:8000",
 	BasePath:         "/api",
 	Schemes:          []string{},
 	Title:            "News Aggregator user service",

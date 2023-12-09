@@ -59,7 +59,7 @@ var (
 // @in header, cookie
 // @name Authorization, access_token
 
-// @host http://51.21.106.236:8002
+// @host 51.21.106.236:8002
 // @BasePath /api
 
 func main() {

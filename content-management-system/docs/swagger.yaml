@@ -95,7 +95,7 @@ definitions:
       user_name:
         type: string
     type: object
-host: http://51.21.106.236:8002
+host: 51.21.106.236:8002
 info:
   contact:
     email: folayanjoey@gmail.com

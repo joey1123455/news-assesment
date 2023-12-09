@@ -76,7 +76,7 @@ definitions:
       updated_at:
         type: string
     type: object
-host: http://51.21.106.236:8000
+host: 51.21.106.236:8000
 info:
   contact:
     email: folayanjoey@gmail.com
@@ -89,35 +89,7 @@ info:
   title: News Aggregator user service
   version: "1.0"
 paths:
-  /auth/logout:
-    post:
-      description: Logout a user by clearing the access_token, refresh_token, and
-        logged_in cookies.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully logged out
-          schema:
-            type: string
-      summary: Logout a user
-  /auth/refresh:
-    get:
-      description: Refresh the access token using the provided refresh token
-      operationId: refreshAccessToken
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: success
-          schema:
-            $ref: '#/definitions/controllers.SignInOkRes'
-        "403":
-          description: fail
-          schema:
-            $ref: '#/definitions/controllers.ErrResponse'
-      summary: Refresh access token
-  /auth/reset-password/{resetToken}:
+  /auth/forgotpassword:
     post:
       consumes:
       - application/json
@@ -149,40 +121,8 @@ paths:
           description: Error while resetting password
           schema:
             type: string
-      summary: Reset password
-  /auth/sign-up:
-    post:
-      consumes:
-      - application/json
-      description: Sign up a new user with the provided information.
-      parameters:
-      - description: User information for sign up
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/models.SignUpInput'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: We sent an email with a verification code to email@example.com
-          schema:
-            type: string
-        "400":
-          description: Passwords do not match
-          schema:
-            type: string
-        "409":
-          description: Email already exists
-          schema:
-            type: string
-        "502":
-          description: Error while signing up new user
-          schema:
-            type: string
-      summary: Sign up user
-  /auth/signin:
+      summary: Forgot password
+  /auth/login:
     post:
       consumes:
       - application/json
@@ -215,8 +155,101 @@ paths:
           schema:
             $ref: '#/definitions/controllers.ErrResponse'
       summary: Sign in a user
-  /auth/verify-email/{verificationCode}:
+  /auth/logout:
+    get:
+      description: Logout a user by clearing the access_token, refresh_token, and
+        logged_in cookies.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully logged out
+          schema:
+            type: string
+      summary: Logout a user
+  /auth/refresh:
+    get:
+      description: Refresh the access token using the provided refresh token
+      operationId: refreshAccessToken
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            $ref: '#/definitions/controllers.SignInOkRes'
+        "403":
+          description: fail
+          schema:
+            $ref: '#/definitions/controllers.ErrResponse'
+      summary: Refresh access token
+  /auth/register:
     post:
+      consumes:
+      - application/json
+      description: Sign up a new user with the provided information.
+      parameters:
+      - description: User information for sign up
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.SignUpInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: We sent an email with a verification code to email@example.com
+          schema:
+            type: string
+        "400":
+          description: Passwords do not match
+          schema:
+            type: string
+        "409":
+          description: Email already exists
+          schema:
+            type: string
+        "502":
+          description: Error while signing up new user
+          schema:
+            type: string
+      summary: Sign up user
+  /auth/resetpassword/{resetToken}:
+    patch:
+      consumes:
+      - application/json
+      description: Reset user password using the provided reset token and new password.
+      parameters:
+      - description: Reset token for password reset
+        in: path
+        name: resetToken
+        required: true
+        type: string
+      - description: User credentials for password reset
+        in: body
+        name: userCredential
+        required: true
+        schema:
+          $ref: '#/definitions/models.ResetPasswordInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password data updated successfully
+          schema:
+            type: string
+        "400":
+          description: Token is invalid or has expired
+          schema:
+            type: string
+        "403":
+          description: Error while resetting password
+          schema:
+            type: string
+      summary: Reset password
+  /auth/verifyemail/{verificationCode}:
+    get:
       description: Verify email address using the provided verification code.
       parameters:
       - description: Verification code for email verification
@@ -236,7 +269,7 @@ paths:
           schema:
             type: string
       summary: Verify email address
-  /user/me:
+  /users/me:
     get:
       description: Get details of the currently authenticated user.
       produces:

@@ -14,7 +14,7 @@
         },
         "version": "1.0"
     },
-    "host": "http://51.21.106.236:8002",
+    "host": "51.21.106.236:8002",
     "basePath": "/api",
     "paths": {
         "/news/feed": {
